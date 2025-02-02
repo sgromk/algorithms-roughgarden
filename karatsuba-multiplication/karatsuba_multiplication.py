@@ -1,7 +1,3 @@
-# To get the most out of this assignment, your program should restrict itself to multiplying only pairs of single-digit numbers.  
-# You can implement the grade-school algorithm if you want, but to get the most out of the assignment you'll want to implement recursive 
-# integer multiplication and/or Karatsuba's algorithm.
-
 def karatsuba_mult(multiplicand, multiplier):
     """
     Performs Karatsuba multiplication on two numbers.
@@ -13,12 +9,47 @@ def karatsuba_mult(multiplicand, multiplier):
     Returns:
         int: The product of the two given numbers.
     """
-    return 0
+    if multiplicand < 10 and multiplier < 10:
+        return multiplicand * multiplier
+
+    # Convert int inputs to strings
+    multiplicand = str(multiplicand)
+    multiplier = str(multiplier)
+
+    max_len = max(len(multiplicand), len(multiplier))
+    multiplicand = multiplicand.zfill(max_len)
+    multiplier = multiplier.zfill(max_len)
+
+    n = len(multiplicand)
+    m = (n+1) // 2
+
+    print(f"n: {n}, m: {m}")
+    
+    a = multiplicand[:m]
+    b = multiplicand[m:]
+    c = multiplier[:m]
+    d = multiplier[m:]
+
+
+    ac = karatsuba_mult(int(a), int(c))
+    bd = karatsuba_mult(int(b), int(d))
+
+
+
+    aPlusB = int(a) + int(b)
+    cPlusD = int(c) + int(d)
+
+    ab_cd = karatsuba_mult(aPlusB, cPlusD)
+
+    ad_bc = ab_cd - ac - bd
+
+    return ac * 10 ** (2 * (n - m)) + ad_bc * 10 ** (n-m) + bd
+
 
 if __name__ == '__main__':
 
     # Using the two given numbers for the problem set.
-    num1 = 3141592653589793238462643383279502884197169399375105820974944592
-    num2 = 2718281828459045235360287471352662497757247093699959574966967627
+    num1 = 12
+    num2 = 34
 
-    karatsuba_mult(num1, num2)
+    print(karatsuba_mult(num1, num2))
