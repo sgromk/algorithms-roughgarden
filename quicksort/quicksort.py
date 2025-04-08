@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 def quicksort(arr: List[int], partition: str ="first") -> List[int]:
     """
@@ -24,22 +24,23 @@ def quicksort(arr: List[int], partition: str ="first") -> List[int]:
             
             # Returns the index of the median value of the first, middle, and last indices
             case "median":
-                first_elem = to_partition[0]
-                middle_elem = to_partition[len(to_partition) // 2]
-                last_elem = to_partition[-1]
-                middle_val = sorted([first_elem, middle_elem, last_elem])[1]
-                return to_partition.index(middle_val)
+                mid_index = (len(to_partition) + 1) // 2
+
+                possible_elems = [(to_partition[0], 0),
+                                  (to_partition[mid_index], mid_index),
+                                  (to_partition[-1], len(to_partition) -1)]
+                return sorted(possible_elems)[1][1]
             
             # Otherwise returns the index 0
             case _:
                 return 0
 
-    # Perform the recursive sorting operations
-    def quicksort_helper(arr: List[int]) -> List[int]:
+    # Perform the recursive sorting operations and counts the number of comparisons
+    def quicksort_helper(arr: List[int]) -> Tuple[List[int], int]:
 
         # Base case
         if len(arr) <= 1:
-            return arr
+            return arr, 0
         
         # Initialize swapping and comparison pointers, pivot and number of iterations
         i = 0
@@ -62,9 +63,11 @@ def quicksort(arr: List[int], partition: str ="first") -> List[int]:
         arr[0], arr[i] = arr[i], arr[0]
 
         # Sort the subarrays to the left and right of the pivot
-        sorted_left = quicksort_helper(arr[0:i])
-        sorted_right = quicksort_helper(arr[i+1:])
+        left_arr = arr[0:i]
+        right_arr = arr[i+1:]
+        sorted_left, left_sum = quicksort_helper(left_arr)
+        sorted_right, right_sum = quicksort_helper(right_arr)
 
-        return sorted_left + [pivot] + sorted_right
+        return sorted_left + [pivot] + sorted_right, (len(arr) - 1 + left_sum + right_sum)
     
     return quicksort_helper(arr)
